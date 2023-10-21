@@ -20,31 +20,35 @@ export const authOptions: NextAuthOptions = {
         if (!credentials || !isValidCredentials(credentials)) {
           return null;
         }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            name: credentials.username,
-          },
-        });
-
-        if (!user) {
-          // Create a new user if they don't exist
-          const passwordHash = await hash(credentials.password, 12);
-          const newUserData = {
-            data: {
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
               name: credentials.username,
-              password: passwordHash,
             },
-          };
-          const newUser = await prisma.user.create(newUserData);
-          return newUser;
-        }
+          });
 
-        if (user && (await compare(credentials.password, user.password))) {
-          return user;
-        }
+          if (!user) {
+            // Create a new user if they don't exist
+            const passwordHash = await hash(credentials.password, 12);
+            const newUserData = {
+              data: {
+                name: credentials.username,
+                password: passwordHash,
+              },
+            };
+            const newUser = await prisma.user.create(newUserData);
+            return newUser;
+          }
 
-        return null;
+          if (user && (await compare(credentials.password, user.password))) {
+            return user;
+          }
+
+          return null;
+        } catch (error) {
+          console.warn(error);
+          return null;
+        }
       },
     }),
   ],
