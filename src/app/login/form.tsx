@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import {
   Box,
@@ -17,33 +17,35 @@ export const LoginForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
-    username: '',
+    email: '',
     password: '',
   });
   const [error, setError] = useState('');
-
-  const searchParams = useSearchParams();
-  const callbackUrl =
-    searchParams.get('callbackUrl') || ROUTE_PATHS.PROTECTED.HOME;
+  const callbackUrl = ROUTE_PATHS.PROTECTED.HOME;
 
   const onSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
-    const res = await signIn('credentials', {
-      redirect: false,
-      username: formValues.username,
-      password: formValues.password,
-      callbackUrl,
-    });
-    setLoading(false);
-
-    if (res?.error) {
+    try {
+      const res = await signIn('credentials', {
+        redirect: false,
+        email: formValues.email,
+        password: formValues.password,
+      });
+      if (!res?.ok) {
+        setError('Invalid email or password');
+        setLoading(false);
+        return;
+      }
+      setError('');
       router.push(callbackUrl);
-      setError('invalid username or password');
+      return;
+    } catch (error) {
+      console.warn(error);
+      setError('Something went wrong, try again later!');
+      setLoading(false);
       return;
     }
-
-    router.push(callbackUrl);
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -62,12 +64,14 @@ export const LoginForm = () => {
         margin='normal'
         required
         fullWidth
-        id='username'
-        placeholder='Username'
-        name='username'
+        id='email'
+        placeholder='Email'
+        name='email'
+        type='email'
         autoFocus
-        value={formValues.username}
+        value={formValues.email}
         onChange={handleChange}
+        disabled={loading}
       />
 
       <TextField
@@ -81,6 +85,7 @@ export const LoginForm = () => {
         id='password'
         value={formValues.password}
         onChange={handleChange}
+        disabled={loading}
       />
 
       {error && <Typography color='error'>{error}</Typography>}

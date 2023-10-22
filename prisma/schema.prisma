@@ -10,8 +10,8 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  name      String   @unique
-  password  String // Consider storing hashed passwords for security
+  email     String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   items     Item[]
@@ -19,7 +19,7 @@ model User {
 
 model Item {
   id        String   @id @default(uuid())
-  title     String
+  title     String   @db.VarChar(100)
   complete  Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

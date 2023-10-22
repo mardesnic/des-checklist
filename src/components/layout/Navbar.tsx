@@ -6,8 +6,6 @@ import { styled } from '@mui/system';
 import MenuIcon from '@mui/icons-material/Menu';
 import { CustomDrawer } from './Drawer';
 import { APP_NAME } from '../../lib/const';
-import Link from 'next/link';
-import { ROUTE_PATHS } from '@/routes';
 
 const NavbarTitle = styled(Typography)(() => ({
   flexGrow: 1,
@@ -22,9 +20,7 @@ export const Navbar: React.FC = () => {
     <>
       <AppBar position='static'>
         <Toolbar>
-          <NavbarTitle variant='h1'>
-            <Link href={ROUTE_PATHS.PROTECTED.HOME}>{APP_NAME}</Link>
-          </NavbarTitle>
+          <NavbarTitle variant='h1'>{APP_NAME}</NavbarTitle>
           <IconButton
             edge='end'
             color='inherit'

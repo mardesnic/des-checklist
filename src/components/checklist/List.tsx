@@ -1,12 +1,12 @@
 'use client';
 
-import { getItems } from '@/lib/api/itemApi';
 import { Item } from '@prisma/client';
 import React, { useState } from 'react';
 import { ListItem as ChecklistItem } from './ListItem';
 import { AddItem } from './AddItem';
 import { MoreActions } from './MoreActions';
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
+import { fetcher } from '@/lib/api/fetcher';
 
 type Props = {
   defaultItems: Item[];
@@ -16,17 +16,12 @@ export const List = ({ defaultItems }: Props) => {
   const [items, setItems] = useState<Item[]>(defaultItems || []);
 
   const fetchItems = async () => {
-    const fetchedItems = await getItems();
+    const fetchedItems = await fetcher('GET', '/api/item');
     setItems(fetchedItems);
   };
 
-  const handleNewItem = async () => {
-    fetchItems();
-  };
-
-  const handleRemoveCompleted = async () => {
-    fetchItems();
-  };
+  const todoItems = items.filter((item) => !item.complete);
+  const completedItems = items.filter((item) => item.complete);
 
   return (
     <Box sx={{ display: 'flex', gap: '16px' }}>
@@ -40,14 +35,30 @@ export const List = ({ defaultItems }: Props) => {
       >
         {items.length > 0 && (
           <div>
-            {items.map((item) => (
-              <ChecklistItem key={item.id} {...item} />
+            {todoItems.map((item) => (
+              <ChecklistItem
+                key={item.id}
+                item={item}
+                onUpdateItem={fetchItems}
+              />
             ))}
+            {todoItems.length > 0 && completedItems.length > 0 && (
+              <Divider sx={{ marginBlock: 2 }} />
+            )}
+            {completedItems
+              .filter((item) => item.complete)
+              .map((item) => (
+                <ChecklistItem
+                  key={item.id}
+                  item={item}
+                  onUpdateItem={fetchItems}
+                />
+              ))}
           </div>
         )}
-        <AddItem onNewItem={handleNewItem} />
+        <AddItem onNewItem={fetchItems} />
       </Box>
-      <MoreActions onRemoveItems={handleRemoveCompleted} />
+      <MoreActions onRemoveItems={fetchItems} />
     </Box>
   );
 };

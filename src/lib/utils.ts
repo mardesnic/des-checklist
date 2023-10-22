@@ -4,38 +4,39 @@ export function generatePageTitle(title: string = '') {
   return `${title ? `${title} | ` : ''}${APP_TITLE}`;
 }
 
-export function generateUsername(): string {
+export function generateFakeEmail(): string {
   const adjectives = [
-    'Brave',
-    'Clever',
-    'Bold',
-    'Happy',
-    'Calm',
-    'Eager',
-    'Honest',
-    'Kind',
-    'Lively',
-    'Proud',
+    'brave',
+    'clever',
+    'bold',
+    'happy',
+    'calm',
+    'eager',
+    'honest',
+    'kind',
+    'lively',
+    'proud',
   ];
   const nouns = [
-    'Lion',
-    'Eagle',
-    'Bear',
-    'Shark',
-    'Tiger',
-    'Fox',
-    'Wolf',
-    'Dolphin',
-    'Owl',
-    'Hawk',
+    'lion',
+    'eagle',
+    'bear',
+    'shark',
+    'tiger',
+    'fox',
+    'wolf',
+    'dolphin',
+    'owl',
+    'hawk',
   ];
 
   const randomAdjective =
     adjectives[Math.floor(Math.random() * adjectives.length)];
-  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  const randomName = nouns[Math.floor(Math.random() * nouns.length)];
+  const randomDomain = nouns[Math.floor(Math.random() * nouns.length)];
   const randomNumber = Math.floor(Math.random() * 100);
 
-  return `${randomAdjective}${randomNoun}${randomNumber}`;
+  return `${randomAdjective}${randomName}${randomNumber}@${randomDomain}.hr`;
 }
 
 function generatePassword(length: number = 12): string {
@@ -49,32 +50,29 @@ function generatePassword(length: number = 12): string {
   return password;
 }
 
-export function generateCredentials(): { username: string; password: string } {
+export function generateCredentials(): { email: string; password: string } {
   return {
-    username: generateUsername(),
+    email: generateFakeEmail(),
     password: generatePassword(),
   };
 }
 
 export function isValidCredentials(credentials: {
-  username: string;
+  email: string;
   password: string;
 }): boolean {
   if (!credentials) {
     return false;
   }
-  const { username, password } = credentials;
-  // check username
-  if (username.length < 3 || username.length > 30) {
+  const { email, password } = credentials;
+
+  // Email validation
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  if (!emailRegex.test(email)) {
     return false;
   }
-  if (!/^[a-zA-Z0-9_.-@]+$/.test(username)) {
-    return false;
-  }
-  if (/\s/.test(username)) {
-    return false;
-  }
-  // check password
+
+  // Password validation
   if (password.length < 3 || password.length > 100) {
     return false;
   }
