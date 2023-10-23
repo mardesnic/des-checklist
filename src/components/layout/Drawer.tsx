@@ -64,7 +64,7 @@ export const CustomDrawer: React.FC<{ open: boolean; onClose: () => void }> = ({
                 sx={{
                   overflow: 'hidden',
                 }}
-                primary={session?.user?.email}
+                primary={'Profile'}
               />
             </ListItemButton>
             <ListItemButton href={ROUTE_PATHS.PROTECTED.HOME}>
